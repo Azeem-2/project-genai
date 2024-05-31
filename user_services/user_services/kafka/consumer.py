@@ -1,6 +1,5 @@
 import asyncio
 from aiokafka import AIOKafkaConsumer
-from google.protobuf.json_format import Parse
 from user_services.kafka import _pb2
 from user_services.db import get_session
 from user_services.models import User
