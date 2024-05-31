@@ -2,6 +2,9 @@ import asyncio
 from aiokafka import AIOKafkaConsumer
 from google.protobuf.json_format import Parse
 from user_services.kafka import _pb2
+from user_services.db import get_session
+from user_services.models import User
+from user_services.auth import get_password_hash
 
 class KafkaConsumer:
     def __init__(self, bootstrap_servers: str, topic: str):
@@ -18,10 +21,24 @@ class KafkaConsumer:
 
     async def consume(self):
         async for msg in self.consumer:
-            # Deserialize message from binary format using Protobuf
-            user_registered = _pb2.UserRegistered()
-            user_registered.ParseFromString(msg.value)
-            print(f"Consumed message: {user_registered}")
+            session = next(get_session())
+            try:
+                # Deserialize message from binary format using Protobuf
+                user_registered = _pb2.UserRegistered()
+                user_registered.ParseFromString(msg.value)
+                print(f"Consumed message: {user_registered}")
+                
+                # Add user to the database
+                hashed_password = get_password_hash(user_registered.password)
+                db_user = User(email=user_registered.email, hashed_password=hashed_password)
+                session.add(db_user)
+                session.commit()
+                session.refresh(db_user)
+            except Exception as e:
+                session.rollback()
+                print(f"Error processing message: {e}")
+            finally:
+                session.close()
 
     async def stop(self):
         await self.consumer.stop()

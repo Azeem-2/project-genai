@@ -14,6 +14,8 @@ from slowapi.util import get_remote_address
 from user_services.kafka.producer import KafkaProducer, get_kafka_producer
 from user_services.kafka import _pb2
 from typing import List
+import asyncio
+from user_services.kafka.consumer import run_consumer
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -22,7 +24,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
+    # Start Kafka consumer as a background task
+    consumer_task = asyncio.create_task(run_consumer())
     yield
+    consumer_task.cancel()
+    try:
+        await consumer_task
+    except asyncio.CancelledError:
+        pass
 
 app = FastAPI(lifespan=lifespan)
 
@@ -34,7 +43,7 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session), pr
     if not validate_password(user.password):
         raise HTTPException(status_code=400, detail="Password does not meet criteria")
     new_user = create_user(session=db, user=user)
-    user_registered = _pb2.UserRegistered(user_id=new_user.id, email=new_user.email)
+    user_registered = _pb2.UserRegistered(email=new_user.email, password=user.password)
     await producer.send("user-registered", user_registered)
     return new_user
 
