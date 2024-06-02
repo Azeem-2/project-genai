@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package product;
+
+message ProductRegistered {
+  int32 product_id = 1;
+  string name = 2;
+  float price = 3;
+}

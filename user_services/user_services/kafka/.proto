@@ -5,4 +5,5 @@ package user;
 message UserRegistered {
   int32 user_id = 1;
   string email = 2;
+  string password = 3;
 }
