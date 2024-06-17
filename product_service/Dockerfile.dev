@@ -57,4 +57,4 @@ RUN poetry install
 EXPOSE 8001
 
 # Run the app. CMD can be overridden when starting the container
-CMD ["poetry", "run", "uvicorn", "product_services.main:app", "--host", "0.0.0.0", "--reload"]
+CMD ["poetry", "run", "uvicorn", "product_service.main:app", "--host", "0.0.0.0", "--reload"]
