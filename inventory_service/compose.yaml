@@ -36,10 +36,12 @@ services:
     container_name: broker
     ports:
       - '9092:9092'
+      - '29093:29093'
+      - '19092:19092'
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_HOST://localhost:9092,PLAINTEXT://broker:19092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_HOST://broker:9092,PLAINTEXT://broker:19092'
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
       KAFKA_LISTENERS: 'CONTROLLER://:29093,PLAINTEXT_HOST://:9092,PLAINTEXT://:19092'
@@ -51,11 +53,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-    volumes:
-      - .:/scripts
-    entrypoint: ["/bin/bash", "-c", "/scripts/create-kafka-topics.sh && /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties"]
-    networks:
-      - default
 
   kafka-ui:
     image: provectuslabs/kafka-ui

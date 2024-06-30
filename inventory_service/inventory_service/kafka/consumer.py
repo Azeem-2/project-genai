@@ -4,6 +4,7 @@ from sqlmodel import Session
 from inventory_service.crud import update_inventory_item
 from inventory_service.db import get_session
 from inventory_service.kafka import inventory_pb2
+from inventory_service.db import engine
 
 KAFKA_BROKER_URL = "broker:19092"
 INVENTORY_TOPIC = "inventory"
@@ -29,10 +30,15 @@ class KafkaConsumer:
             async for msg in self.consumer:
                 inventory_update = inventory_pb2.InventoryUpdate()
                 inventory_update.ParseFromString(msg.value)
-                async with get_session() as session:
+                session = Session(engine)  # Create session inside the loop
+                try:
                     update_inventory_item(session, inventory_update.product_id, inventory_update.quantity)
+                finally:
+                    session.close()  # Close session after each message processing
         finally:
             await self.stop()
+
+
 
 async def start_consumer():
     consumer = KafkaConsumer(KAFKA_BROKER_URL, INVENTORY_TOPIC)
