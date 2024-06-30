@@ -1,0 +1,19 @@
+# Use the base image that your application needs
+FROM bitnami/kafka:latest
+
+# Switch to root user to install packages
+USER root
+
+# Update package list and install netcat-openbsd using apt-get package manager
+RUN apt-get update && \
+    apt-get install -y netcat-openbsd && \
+    rm -rf /var/lib/apt/lists/*
+
+# Switch back to the default user (usually '1001' in Bitnami images)
+USER 1001
+
+# Copy your script into the container
+COPY ./topic.sh /scripts/topic.sh
+
+# Set the entrypoint for the container
+ENTRYPOINT ["/bin/bash", "/scripts/topic.sh"]
