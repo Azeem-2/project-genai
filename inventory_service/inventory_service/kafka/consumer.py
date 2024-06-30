@@ -9,6 +9,7 @@ from inventory_service.db import engine
 KAFKA_BROKER_URL = "broker:19092"
 INVENTORY_TOPIC = "inventory"
 
+
 class KafkaConsumer:
     def __init__(self, broker_url: str, topic: str):
         self.consumer = AIOKafkaConsumer(
@@ -29,16 +30,16 @@ class KafkaConsumer:
         try:
             async for msg in self.consumer:
                 inventory_update = inventory_pb2.InventoryUpdate()
+                # Ensure correct deserialization
                 inventory_update.ParseFromString(msg.value)
                 session = Session(engine)  # Create session inside the loop
                 try:
+                    # Update the item using the correct deserialized data
                     update_inventory_item(session, inventory_update.product_id, inventory_update.quantity)
                 finally:
                     session.close()  # Close session after each message processing
         finally:
             await self.stop()
-
-
 
 async def start_consumer():
     consumer = KafkaConsumer(KAFKA_BROKER_URL, INVENTORY_TOPIC)

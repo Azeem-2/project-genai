@@ -29,7 +29,7 @@ async def create_inventory_item(item: schemas.InventoryItemCreate, db: Session =
     # Create item in database
     db_item = crud.create_inventory_item(db, item)
 
-    # Send message to Kafka
+    # Create and serialize inventory message
     inventory_message = inventory_pb2.InventoryUpdate(
         product_id=item.product_id,
         quantity=item.quantity
@@ -37,6 +37,7 @@ async def create_inventory_item(item: schemas.InventoryItemCreate, db: Session =
     await kafka_producer.send("inventory", inventory_message)
 
     return db_item  # Return the created item
+
 
 @app.get("/inventory", response_model=List[schemas.InventoryItemRead])
 def get_inventory_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):

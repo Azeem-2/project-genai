@@ -1,7 +1,7 @@
+# producer.py
 from aiokafka import AIOKafkaProducer
 import asyncio
 from inventory_service.kafka import inventory_pb2
-from typing import AsyncGenerator
 
 KAFKA_BROKER_URL = "broker:19092"
 INVENTORY_TOPIC = "inventory"
@@ -17,11 +17,10 @@ class KafkaProducer:
         await self.producer.stop()
 
     async def send(self, topic: str, message: inventory_pb2.InventoryUpdate):
-        await self.producer.send_and_wait(topic, message.SerializeToString())
+        serialized_message = message.SerializeToString()
+        await self.producer.send_and_wait(topic, serialized_message)
 
-
-
-async def get_kafka_producer()-> AsyncGenerator[KafkaProducer, None]:
+async def get_kafka_producer():
     producer = KafkaProducer(KAFKA_BROKER_URL)
     await producer.start()
     try:
