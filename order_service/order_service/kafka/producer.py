@@ -3,7 +3,6 @@ import asyncio
 from order_service.kafka import order_pb2
 from typing import AsyncGenerator
 
-
 KAFKA_BROKER_URL = "broker:19092"
 ORDER_TOPIC = "orders"
 
@@ -18,9 +17,10 @@ class KafkaProducer:
         await self.producer.stop()
 
     async def send(self, topic: str, message: order_pb2.OrderCreate):
-        await self.producer.send_and_wait(topic, message.SerializeToString())
-
-
+        try:
+            await self.producer.send_and_wait(topic, message.SerializeToString())
+        except Exception as e:
+            print(f"Failed to send message to Kafka: {e}")
 
 async def get_kafka_producer() -> AsyncGenerator[KafkaProducer, None]:
     producer = KafkaProducer(KAFKA_BROKER_URL)

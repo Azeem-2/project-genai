@@ -6,3 +6,4 @@ class Payment(SQLModel, table=True):
     order_id: int
     amount: float
     status: str
+    client_secret: Optional[str] = None  # Add this field

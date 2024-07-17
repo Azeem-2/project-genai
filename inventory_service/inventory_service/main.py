@@ -12,7 +12,6 @@ from aiokafka import AIOKafkaProducer
 from aiokafka import AIOKafkaConsumer
 from inventory_service.kafka.producer import KafkaProducer  # Correct import
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
@@ -26,18 +25,14 @@ app: FastAPI = FastAPI(lifespan=lifespan)
 
 @app.post("/inventory/", response_model=schemas.InventoryItemRead)
 async def create_inventory_item(item: schemas.InventoryItemCreate, db: Session = Depends(get_session), kafka_producer: KafkaProducer = Depends(get_kafka_producer)):
-    # Create item in database
     db_item = crud.create_inventory_item(db, item)
-
-    # Create and serialize inventory message
     inventory_message = inventory_pb2.InventoryUpdate(
         product_id=item.product_id,
-        quantity=item.quantity
+        quantity=item.quantity,
+        operation_type=inventory_pb2.OperationType.CREATE
     )
     await kafka_producer.send("inventory", inventory_message)
-
-    return db_item  # Return the created item
-
+    return db_item
 
 @app.get("/inventory", response_model=List[schemas.InventoryItemRead])
 def get_inventory_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
@@ -48,12 +43,27 @@ def get_inventory_item_by_id(item_id: int, db: Session = Depends(get_session)):
     return crud.get_inventory_item(db, item_id)
 
 @app.put("/inventory/{item_id}", response_model=schemas.InventoryItemRead)
-def update_inventory_item(item_id: int, item: schemas.InventoryItemUpdate, db: Session = Depends(get_session)):
-    return crud.update_inventory_item(db, item_id, item)
+async def update_inventory_item(item_id: int, item: schemas.InventoryItemUpdate, db: Session = Depends(get_session), kafka_producer: KafkaProducer = Depends(get_kafka_producer)):
+    updated_item = crud.update_inventory_item(db, item_id, item)
+    if not updated_item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    inventory_message = inventory_pb2.InventoryUpdate(
+        product_id=updated_item.product_id,
+        quantity=updated_item.quantity,
+        operation_type=inventory_pb2.OperationType.UPDATE
+    )
+    await kafka_producer.send("inventory", inventory_message)
+    return updated_item
 
 @app.delete("/inventory/{item_id}", response_model=dict)
-def delete_inventory_item(item_id: int, db: Session = Depends(get_session)):
+async def delete_inventory_item(item_id: int, db: Session = Depends(get_session), kafka_producer: KafkaProducer = Depends(get_kafka_producer)):
     result = crud.delete_inventory_item(db, item_id)
     if not result:
         raise HTTPException(status_code=404, detail="Item not found")
+    inventory_message = inventory_pb2.InventoryUpdate(
+        product_id=item_id,
+        quantity=0,  # Represent deletion with quantity 0 or a specific deletion message
+        operation_type=inventory_pb2.OperationType.DELETE
+    )
+    await kafka_producer.send("inventory", inventory_message)
     return result

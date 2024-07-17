@@ -21,31 +21,28 @@ def get_orders(db: Session, skip: int = 0, limit: int = 100) -> List[Order]:
 def get_order_by_id(db: Session, order_id: int) -> Order:
     return db.get(Order, order_id)
 
-def update_order(db: Session, order_id: int, order: OrderUpdate) -> Optional[Order]:
+def update_order(db: Session, order_id: int, order: OrderUpdate):
     db_order = db.get(Order, order_id)
-    if db_order is None:
+    if not db_order:
         return None
+
     if order.user_id is not None:
         db_order.user_id = order.user_id
     if order.total_price is not None:
         db_order.total_price = order.total_price
+
+    for item_update in order.items:
+        db_item = db.get(OrderItem, item_update.id)
+        if db_item:
+            if item_update.product_id is not None:
+                db_item.product_id = item_update.product_id
+            if item_update.quantity is not None:
+                db_item.quantity = item_update.quantity
+
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
-    if order.items is not None:
-        for item in order.items:
-            db_item = db.get(OrderItem, item.id)
-            if db_item is None:
-                continue
-            if item.product_id is not None:
-                db_item.product_id = item.product_id
-            if item.quantity is not None:
-                db_item.quantity = item.quantity
-            db.add(db_item)
-        db.commit()
-    db.refresh(db_order)
     return db_order
-
 
 def delete_order(db: Session, order_id: int) -> Order:
     db_order = db.get(Order, order_id)

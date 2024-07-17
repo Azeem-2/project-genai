@@ -1,6 +1,4 @@
-# producer.py
 from aiokafka import AIOKafkaProducer
-import asyncio
 from inventory_service.kafka import inventory_pb2
 
 KAFKA_BROKER_URL = "broker:19092"

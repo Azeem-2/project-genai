@@ -1,6 +1,7 @@
 from sqlmodel import Field, SQLModel
 from typing import List, Optional
 
+
 class OrderItemBase(SQLModel):
     product_id: int
     quantity: int
@@ -9,8 +10,9 @@ class OrderItemCreate(OrderItemBase):
     pass
 
 class OrderItemUpdate(SQLModel):
-    product_id: Optional[int] = None
-    quantity: Optional[int] = None
+    id: int
+    product_id: int
+    quantity: int
 
 class OrderCreate(SQLModel):
     user_id: int

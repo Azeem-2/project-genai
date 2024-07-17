@@ -6,4 +6,12 @@ message UserRegistered {
   int32 user_id = 1;
   string email = 2;
   string password = 3;
+  string operation_type = 4;
+}
+
+message UserDataCreated {
+  int32 id = 1;
+  string data = 2;
+  int32 owner_id = 3;
+  string operation_type = 4;
 }

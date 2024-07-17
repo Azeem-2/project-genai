@@ -37,6 +37,8 @@ class KafkaConsumer:
                 }
                 async with get_session() as session:
                     create_order(session, OrderCreate(**order_dict))
+        except Exception as e:
+            print(f"Failed to consume message from Kafka: {e}")
         finally:
             await self.stop()
 

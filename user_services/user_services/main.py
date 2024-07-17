@@ -43,7 +43,7 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session), pr
     if not validate_password(user.password):
         raise HTTPException(status_code=400, detail="Password does not meet criteria")
     new_user = create_user(session=db, user=user)
-    user_registered = _pb2.UserRegistered(email=new_user.email, password=user.password)
+    user_registered = _pb2.UserRegistered(email=new_user.email, password=user.password, operation_type="CREATE")
     await producer.send("user-registered", user_registered)
     return new_user
 
@@ -68,8 +68,11 @@ def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 @app.post("/data", response_model=UserDataRead)
-def create_user_data_endpoint(data: UserDataCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_session)):
-    return create_user_data(session=db, data=data, user=current_user)
+async def create_user_data_endpoint(data: UserDataCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_session), producer: KafkaProducer = Depends(get_kafka_producer)):
+    new_user_data = create_user_data(session=db, data=data, user=current_user)
+    user_data_created = _pb2.UserDataCreated(data=new_user_data.data, owner_id=current_user.id, operation_type="CREATE")
+    await producer.send("user-data-created", user_data_created)
+    return new_user_data
 
 @app.get("/data", response_model=List[UserDataRead])
 def read_user_data(current_user: User = Depends(get_current_user), db: Session = Depends(get_session)):

@@ -35,3 +35,14 @@ def delete_payment(db: Session, payment_id: int) -> Payment:
     db.delete(db_payment)
     db.commit()
     return db_payment
+
+def update_payment_status(db: Session, order_id: int, status: str):
+    statement = select(Payment).where(Payment.order_id == order_id)
+    results = db.exec(statement)
+    payment = results.one_or_none()
+    if payment:
+        payment.status = status
+        db.add(payment)
+        db.commit()
+        db.refresh(payment)
+    return payment

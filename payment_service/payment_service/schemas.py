@@ -1,5 +1,5 @@
-from sqlmodel import Field, SQLModel
-from typing import List, Optional
+from sqlmodel import SQLModel
+from typing import Optional
 
 class PaymentBase(SQLModel):
     order_id: int
@@ -17,3 +17,4 @@ class PaymentDetail(PaymentBase):
 
 class PaymentResponse(PaymentBase):
     id: int
+    client_secret: Optional[str] = None  # Ensure this field is included

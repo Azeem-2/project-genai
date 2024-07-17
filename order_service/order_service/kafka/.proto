@@ -2,13 +2,30 @@ syntax = "proto3";
 
 package order;
 
-message OrderItem {
-    int32 product_id = 1;
-    int32 quantity = 2;
+// Define the Order message
+message OrderCreate {
+  int32 user_id = 1;
+  repeated Item items = 2;
+  float total_price = 3;
 }
 
-message OrderCreate {
-    int32 user_id = 1;
-    repeated OrderItem items = 2;
-    float total_price = 3;
+message Item {
+  int32 product_id = 1;
+  int32 quantity = 2;
 }
+
+message OrderUpdate {
+  int32 id = 1;
+  int32 user_id = 2;
+  repeated Item items = 3;
+  float total_price = 4;
+}
+
+message OrderItemUpdate {
+  int32 id = 1;
+  int32 order_id = 2;
+  int32 product_id = 3;
+  int32 quantity = 4;
+}
+
+// Other messages...

@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package notification_service;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// Define the Notification message
+message Notification {
+  int32 id = 1;
+  int32 user_id = 2;
+  string message = 3;
+  string type = 4; // "email" or "sms"
+  google.protobuf.Timestamp created_at = 5;
+}
+
+// Define the NotificationCreate message
+message NotificationCreate {
+  int32 user_id = 1;
+  string message = 2;
+  string type = 3; // "email" or "sms"
+}
+
+// Define the NotificationRead message
+message NotificationRead {
+  int32 id = 1;
+  int32 user_id = 2;
+  string message = 3;
+  string type = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+// Define the NotificationIdRequest message
+message NotificationIdRequest {
+  int32 id = 1;
+}
+
+// Define the NotificationUpdateRequest message
+message NotificationUpdateRequest {
+  int32 id = 1;
+  NotificationCreate notification = 2;
+}
+
+// Define the service
+service NotificationService {
+  // RPC method for creating a notification
+  rpc CreateNotification (NotificationCreate) returns (NotificationRead);
+  
+  // RPC method for getting notifications
+  rpc GetNotifications (google.protobuf.Empty) returns (stream NotificationRead);
+  
+  // RPC method for getting a specific notification by ID
+  rpc GetNotificationById (NotificationIdRequest) returns (NotificationRead);
+  
+  // RPC method for deleting a notification
+  rpc DeleteNotification (NotificationIdRequest) returns (google.protobuf.Empty);
+  
+  // RPC method for updating a notification
+  rpc UpdateNotification (NotificationUpdateRequest) returns (NotificationRead);
+}
