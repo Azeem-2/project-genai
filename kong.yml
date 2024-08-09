@@ -1,0 +1,43 @@
+_format_version: "2.1"
+services:
+  - name: inventory_service
+    url: http://inventory_service:8000
+    routes:
+      - name: inventory_route
+        paths:
+          - /inventory
+
+  - name: notification_service
+    url: http://notification_service:8000
+    routes:
+      - name: notification_route
+        paths:
+          - /notification
+
+  - name: order_service
+    url: http://order_service:8000
+    routes:
+      - name: order_route
+        paths:
+          - /order
+
+  - name: payment_service
+    url: http://payment_service:8000
+    routes:
+      - name: payment_route
+        paths:
+          - /payment
+
+  - name: product_service
+    url: http://product_service:8000
+    routes:
+      - name: product_route
+        paths:
+          - /product
+
+  - name: user_services
+    url: http://user_services:8000
+    routes:
+      - name: user_route
+        paths:
+          - /user
