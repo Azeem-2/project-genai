@@ -1,3 +1,5 @@
+version: '3.8'  # Ensure you're using a compatible version
+
 services:
   # Redefine the shared services
   postgres_db:
@@ -114,20 +116,16 @@ services:
       KONG_PG_USER: kong
       KONG_PG_PASSWORD: kongpassword
       KONG_PG_DATABASE: kong
-      KONG_PROXY_LISTEN: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
-      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
-      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_LISTEN: "0.0.0.0:8008, 0.0.0.0:8449 ssl" # Updated port
+      KONG_ADMIN_LISTEN: "0.0.0.0:8009, 0.0.0.0:8450 ssl" # Updated port
     ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
+      - "8008:8008"
+      - "8449:8449"
+      - "8009:8009"
+      - "8450:8450"
     volumes:
       - ./kong/kong.yml:/usr/local/kong/declarative/kong.yml
     restart: always
-
-
-
 
 volumes:
   postgres_db:
@@ -136,4 +134,3 @@ volumes:
 networks:
   default:
     driver: bridge
-
