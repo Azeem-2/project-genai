@@ -22,15 +22,18 @@ async def lifespan(app: FastAPI):
 
 app: FastAPI = FastAPI(lifespan=lifespan)
 
-@app.post("/orders/")
-async def create_order(order: OrderCreate, kafka_producer: KafkaProducer = Depends(get_kafka_producer)):
+@app.post("/orders/", response_model=schemas.OrderResponse)  # Make sure this matches your schemas
+async def create_order(order: OrderCreate, db: Session = Depends(get_session), kafka_producer: KafkaProducer = Depends(get_kafka_producer)):
+    created_order = crud.create_order(db, order)
+    # Serialize and send the created order to Kafka
     order_message = order_pb2.OrderCreate(
-        user_id=order.user_id,
-        items=[order_pb2.Item(product_id=item.product_id, quantity=item.quantity) for item in order.items],
-        total_price=order.total_price
+        user_id=created_order.user_id,
+        items=[order_pb2.Item(product_id=item.product_id, quantity=item.quantity) for item in created_order.items],
+        total_price=created_order.total_price
     )
     await kafka_producer.send("orders", order_message)
-    return {"status": "Order sent to Kafka"}
+    return created_order
+
 
 @app.get("/order", response_model=List[schemas.OrderList])
 def get_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
@@ -68,9 +71,9 @@ async def delete_order(order_id: int, db: Session = Depends(get_session), kafka_
     await kafka_producer.send("orders", order_message)
     return deleted_order
 
-@app.get("/order/{order_id}/items", response_model=List[schemas.OrderItemBase])
-def get_order_items(order_id: int, db: Session = Depends(get_session)):
-    return crud.get_order_items(db, order_id)
+@app.get("/order", response_model=List[schemas.OrderList])
+def get_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_session)):
+    return crud.get_orders(db, skip, limit)
 
 @app.get("/order/{order_id}/items/{item_id}", response_model=schemas.OrderItemBase)
 def get_order_item_by_id(order_id: int, item_id: int, db: Session = Depends(get_session)):

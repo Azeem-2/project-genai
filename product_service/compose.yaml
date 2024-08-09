@@ -1,7 +1,5 @@
-version: '3.8'
-
 services:
-  product_service:
+  api:
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -10,26 +8,25 @@ services:
     depends_on:
       - postgres_db
       - broker
-      - topic-creator
     ports:
-      - "8001:8001"
+      - "8000:8000"
     networks:
-      - kafka_network
+      - default
 
   postgres_db:
-    image: postgres
+    image: postgres:latest
     restart: always
     container_name: PostgresCont
     environment:
-      POSTGRES_USER: ziakhan
-      POSTGRES_PASSWORD: my_password
-      POSTGRES_DB: mydatabase
+      - POSTGRES_USER=ziakhan
+      - POSTGRES_PASSWORD=my_password
+      - POSTGRES_DB=mydatabase
     ports:
       - '5433:5432'
     volumes:
       - postgres_db:/var/lib/postgresql/data
     networks:
-      - kafka_network
+      - default
 
   broker:
     image: apache/kafka:3.7.0
@@ -37,14 +34,15 @@ services:
     container_name: broker
     ports:
       - '9092:9092'
+      - '29093:29093'
       - '19092:19092'
     environment:
       KAFKA_NODE_ID: 1
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT_HOST://broker:9092,PLAINTEXT://broker:19092'
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
-      KAFKA_LISTENERS: 'CONTROLLER://broker:29093,PLAINTEXT_HOST://broker:9092,PLAINTEXT://broker:19092'
+      KAFKA_LISTENERS: 'CONTROLLER://:29093,PLAINTEXT_HOST://:9092,PLAINTEXT://:19092'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       CLUSTER_ID: '4L6g3nShT-eMCtK--X86sw'
@@ -53,8 +51,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-    networks:
-      - kafka_network
 
   kafka-ui:
     image: provectuslabs/kafka-ui
@@ -63,29 +59,17 @@ services:
       - "8080:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: 'Local Kafka Cluster'
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'broker:19092'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'broker:9092'
       DYNAMIC_CONFIG_ENABLED: "true"
     depends_on:
       - broker
     networks:
-      - kafka_network
-
-  topic-creator:
-    build:
-      context: .
-      dockerfile: Dockerfile.pd
-    depends_on:
-      - broker
-    volumes:
-      - ./topic.sh:/scripts/topic.sh
-    entrypoint: ["/bin/bash", "/scripts/topic.sh"]
-    networks:
-      - kafka_network
+      - default
 
 volumes:
   postgres_db:
     driver: local
 
 networks:
-  kafka_network:
+  default:
     driver: bridge

@@ -1,17 +1,16 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlmodel import Session
 from user_services.db import create_db_and_tables, get_session
 from user_services.schemas import UserCreate, UserRead, TokenResponse, UserDataCreate, UserDataRead, TokenData
-from user_services.crud import create_user, get_user_by_email, authenticate_user, create_user_data, get_user_data, refresh_access_token
+from user_services.crud import create_user, get_user_by_email, authenticate_user, create_user_data, get_user_data, refresh_access_token, validate_password
 from user_services.auth import create_access_token
 from user_services.dp import get_current_user
 from user_services.models import User, UserData
 from contextlib import asynccontextmanager
-from user_services.crud import validate_password
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from user_services.kafka.producer import KafkaProducer, get_kafka_producer
+from user_services.kafka.producer import USER_TOPIC, KafkaProducer, get_kafka_producer
 from user_services.kafka import _pb2
 from typing import List
 import asyncio
@@ -43,8 +42,13 @@ async def register_user(user: UserCreate, db: Session = Depends(get_session), pr
     if not validate_password(user.password):
         raise HTTPException(status_code=400, detail="Password does not meet criteria")
     new_user = create_user(session=db, user=user)
-    user_registered = _pb2.UserRegistered(email=new_user.email, password=user.password, operation_type="CREATE")
-    await producer.send("user-registered", user_registered)
+    user_registered = _pb2.UserRegistered(
+        user_id=new_user.id,
+        email=new_user.email,
+        password=user.password,
+        operation_type="CREATE"
+    )
+    await producer.send(USER_TOPIC, user_registered)
     return new_user
 
 @app.post("/token", response_model=TokenResponse)
@@ -70,7 +74,12 @@ def read_users_me(current_user: User = Depends(get_current_user)):
 @app.post("/data", response_model=UserDataRead)
 async def create_user_data_endpoint(data: UserDataCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_session), producer: KafkaProducer = Depends(get_kafka_producer)):
     new_user_data = create_user_data(session=db, data=data, user=current_user)
-    user_data_created = _pb2.UserDataCreated(data=new_user_data.data, owner_id=current_user.id, operation_type="CREATE")
+    user_data_created = _pb2.UserDataCreated(
+        id=new_user_data.id,
+        data=new_user_data.data,
+        owner_id=current_user.id,
+        operation_type="CREATE"
+    )
     await producer.send("user-data-created", user_data_created)
     return new_user_data
 

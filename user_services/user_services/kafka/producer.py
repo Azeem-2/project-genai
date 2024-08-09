@@ -1,10 +1,8 @@
-import asyncio
 from aiokafka import AIOKafkaProducer
 from user_services.kafka import _pb2
-from typing import AsyncGenerator
 
 KAFKA_BROKER_URL = "broker:19092"
-USER_TOPIC = "user-registered"
+USER_TOPIC = "user-registered"  # Define the user topic here
 
 class KafkaProducer:
     def __init__(self, broker_url: str):
@@ -20,7 +18,7 @@ class KafkaProducer:
         serialized_message = message.SerializeToString()
         await self.producer.send_and_wait(topic, serialized_message)
 
-async def get_kafka_producer() -> AsyncGenerator[KafkaProducer, None]:
+async def get_kafka_producer():
     producer = KafkaProducer(KAFKA_BROKER_URL)
     await producer.start()
     try:

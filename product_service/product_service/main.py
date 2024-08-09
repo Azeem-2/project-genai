@@ -7,20 +7,11 @@ from product_service.kafka.producer import KafkaProducer, get_kafka_producer
 from product_service.kafka import _pb2
 from typing import List
 from contextlib import asynccontextmanager
-import asyncio
-from product_service.kafka.consumer import run_consumer
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
-    # Start Kafka consumer as a background task
-    consumer_task = asyncio.create_task(run_consumer())
     yield
-    consumer_task.cancel()
-    try:
-        await consumer_task
-    except asyncio.CancelledError:
-        pass
 
 app = FastAPI(lifespan=lifespan)
 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Payment Simulation</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+      body {
+        background: #3C3C3C;
+        margin: 0;
+        padding: 20px;
+        color: #fff;
+      }
+      #card-element {
+        margin: 20px 0;
+      }
+      #message {
+        margin-top: 20px;
+      }
+    </style>
+</head>
+<body>
+    <h1>Stripe Payment Simulation</h1>
+    <div id="card-element"></div>
+    <button id="pay-button">Pay</button>
+    <div id="message"></div>
+
+    <script>
+        // Initialize Stripe and Elements
+        const stripe = Stripe('pk_test_51Ooe5RGOsUaGzOo3sZV1UQU59sSX0bI1PfwuJbbwZ5CTXxmOoxDeDYYd0ZWqEPbYUu7OFGAhrQnxDooBqDC65MgD00qk6glImE'); // Replace with your actual Stripe publishable key
+        const elements = stripe.elements();
+        const cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+
+        document.getElementById('pay-button').addEventListener('click', function() {
+            const clientSecret = 'pi_3PlpsiGOsUaGzOo31II6zut6_secret_sOg68vk1y3YiTy6LvWZ8JLV3S'; // Replace with your actual client_secret
+
+            stripe.confirmCardPayment(clientSecret, {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: 'Test User',
+                    },
+                },
+            }).then((result) => {
+                const messageElement = document.getElementById('message');
+                if (result.error) {
+                    // Display error message
+                    messageElement.textContent = 'Payment failed: ' + result.error.message;
+                } else {
+                    if (result.paymentIntent.status === 'succeeded') {
+                        // Payment succeeded
+                        messageElement.textContent = 'Payment successful!';
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

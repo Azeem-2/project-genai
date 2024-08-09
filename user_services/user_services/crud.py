@@ -1,9 +1,13 @@
+import jwt
 from sqlmodel import Session, select
 from user_services.models import User, UserData
-from user_services.auth import get_password_hash, verify_password
+from user_services.auth import ALGORITHM, SECRET_KEY, create_access_token, get_password_hash, verify_password
 from user_services.schemas import UserCreate, UserDataCreate
 from typing import Optional, List
 import re
+from jwt import PyJWTError
+
+
 
 def get_user_by_email(session: Session, email: str) -> Optional[User]:
     statement = select(User).where(User.email == email)
@@ -51,5 +55,5 @@ def refresh_access_token(token: str, db: Session) -> str:
         if user is None:
             return None
         return create_access_token(data={"sub": user.email})
-    except JWTError:
+    except PyJWTError:
         return None

@@ -17,6 +17,7 @@ slowapi = "^0.1.9"
 protobuf = "^5.27.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-jose = "^3.3.0"
+pyjwt = "^2.9.0"
 
 
 

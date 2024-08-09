@@ -9,9 +9,12 @@ from typing import List
 from contextlib import asynccontextmanager
 import stripe
 from payment_service.settings import STRIPE_API_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PUBLISHABLE_KEY
+from fastapi.requests import Request
+
 
 # Set your Stripe secret key from the settings module
 stripe.api_key = str(STRIPE_API_KEY)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,6 +25,12 @@ async def lifespan(app: FastAPI):
         pass
 
 app = FastAPI(lifespan=lifespan)
+
+
+
+
+
+
 
 @app.post("/payment", response_model=PaymentResponse)
 async def create_payment(payment: PaymentCreate, db: Session = Depends(get_session), kafka_producer: KafkaProducer = Depends(get_kafka_producer)):

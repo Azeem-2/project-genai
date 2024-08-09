@@ -8,10 +8,12 @@ def create_order(db: Session, order: OrderCreate) -> Order:
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
+    
     for item in order.items:
-        db_item = OrderItem(**item.dict(), order_id=db_order.id)
+        db_item = OrderItem(**item.model_dump(), order_id=db_order.id)
         db.add(db_item)
-    db.commit()
+    
+    db.commit()  # Commit after adding items
     db.refresh(db_order)
     return db_order
 
@@ -79,11 +81,12 @@ def delete_order_item(db: Session, order_id: int, item_id: int) -> OrderItem:
     db.commit()
     return db_item
 
-def verify_order(db: Session, order: OrderVerify) -> Order:
-    db_order = db.exec(select(Order).where(Order.user_id == order.user_id, Order.total_price == order.total_price)).first()
-    return db_order
+# Function to verify an order based on user ID and total price
+def verify_order(db: Session, order: OrderVerify) -> Optional[Order]:
+    return db.exec(select(Order).where(Order.user_id == order.user_id, Order.total_price == order.total_price)).first()
 
-def delete_order_by_user_id(db: Session, user_id: int) -> Order:
+# Function to delete an order based on user ID
+def delete_order_by_user_id(db: Session, user_id: int) -> Optional[Order]:
     db_order = db.exec(select(Order).where(Order.user_id == user_id)).first()
     if db_order is None:
         return None
@@ -91,7 +94,8 @@ def delete_order_by_user_id(db: Session, user_id: int) -> Order:
     db.commit()
     return db_order
 
-def delete_order_by_user_id_and_total_price(db: Session, user_id: int, total_price: float) -> Order:
+# Function to delete an order based on user ID and total price
+def delete_order_by_user_id_and_total_price(db: Session, user_id: int, total_price: float) -> Optional[Order]:
     db_order = db.exec(select(Order).where(Order.user_id == user_id, Order.total_price == total_price)).first()
     if db_order is None:
         return None
@@ -99,6 +103,6 @@ def delete_order_by_user_id_and_total_price(db: Session, user_id: int, total_pri
     db.commit()
     return db_order
 
-def get_order_by_user_id_and_total_price(db: Session, user_id: int, total_price: float) -> Order:
-    db_order = db.exec(select(Order).where(Order.user_id == user_id, Order.total_price == total_price)).first()
-    return db_order
+# Function to get an order based on user ID and total price
+def get_order_by_user_id_and_total_price(db: Session, user_id: int, total_price: float) -> Optional[Order]:
+    return db.exec(select(Order).where(Order.user_id == user_id, Order.total_price == total_price)).first()

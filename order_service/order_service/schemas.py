@@ -1,7 +1,6 @@
 from sqlmodel import Field, SQLModel
 from typing import List, Optional
 
-
 class OrderItemBase(SQLModel):
     product_id: int
     quantity: int
@@ -24,14 +23,6 @@ class OrderUpdate(SQLModel):
     items: Optional[List[OrderItemUpdate]] = None
     total_price: Optional[float] = None
 
-class OrderVerify(SQLModel):
-    user_id: int
-    total_price: float
-
-class OrderDelete(SQLModel):
-    user_id: int
-    total_price: float
-
 class OrderList(SQLModel):
     id: int
     user_id: int
@@ -47,4 +38,9 @@ class OrderResponse(SQLModel):
     id: int
     user_id: int
     items: List[OrderItemBase]
+    total_price: float
+
+# Ensure OrderVerify is defined
+class OrderVerify(SQLModel):
+    user_id: int
     total_price: float
