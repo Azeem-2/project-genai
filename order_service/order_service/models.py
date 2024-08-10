@@ -7,15 +7,17 @@ class OrderItem(SQLModel, table=True):
     order_id: int = Field(foreign_key="order.id", nullable=False)
     product_id: int
     quantity: int
-    order: "Order" = Relationship(back_populates="items")
+    order: Optional["Order"] = Relationship(back_populates="items")
 
 class Order(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int
     total_price: float
-    # Use SQLAlchemy's relationship to enable cascading
-    items: List[OrderItem] = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+    items: List["OrderItem"] = Relationship(back_populates="order")
 
 # Resolve forward references
 Order.model_rebuild()
 OrderItem.model_rebuild()
+
+# Add cascading behavior using SQLAlchemy's relationship
+Order.items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")

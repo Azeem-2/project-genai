@@ -1,5 +1,3 @@
-version: '3.8'  # Ensure you're using a compatible version
-
 services:
   # Redefine the shared services
   postgres_db:
