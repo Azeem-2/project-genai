@@ -1,3 +1,5 @@
+version: '3.7'
+
 services:
   api:
     build:
@@ -5,6 +7,7 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - .:/code
+      - ./components:/components # Mount the components directory
     depends_on:
       - postgres_db
       - broker
@@ -12,8 +15,9 @@ services:
       - "8003:8000"
     networks:
       - default
-
-
+    command: ["dapr", "run", "--app-id", "payment-service", "--app-port", "8000", "--dapr-http-port", "3500", "--resources-path", "/components"]
+    environment:
+      DAPR_HTTP_PORT: 3500
 
 volumes:
   postgres_db:

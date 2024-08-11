@@ -1,14 +1,27 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12-slim
+FROM python:3.12
 
 LABEL maintainer="ameen-alam"
+
 # Set the working directory in the container
 WORKDIR /code
+
 # Install system dependencies required for potential Python packages
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Update package lists
+RUN apt-get update && apt-get install -y wget
+
+# Download and install Dapr CLI and runtime
+RUN wget https://github.com/dapr/cli/releases/download/v1.13.0/dapr_linux_amd64.tar.gz \
+    && tar -xzf dapr_linux_amd64.tar.gz \
+    && mv dapr /usr/local/bin/ \
+    && dapr init --runtime-version=1.13.0 --slim
+
+
 
 # Install Poetry
 RUN pip install poetry
