@@ -12,12 +12,12 @@ services:
       - postgres_db
       - broker
     ports:
-      - "8002:8000"
+      - "8002:8000" # Updated port for the order service
     networks:
       - default
-    command: ["dapr", "run", "--app-id", "order-service", "--app-port", "8000", "--dapr-http-port", "3500", "--resources-path", "/components"]
+    # command: ["dapr", "run", "--app-id", "order-service", "--app-port", "8002", "--dapr-http-port", "3502", "--resources-path", "/components"]
     environment:
-      DAPR_HTTP_PORT: 3500
+      DAPR_HTTP_PORT: 3502
 
 volumes:
   postgres_db:

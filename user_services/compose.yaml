@@ -12,12 +12,12 @@ services:
       - postgres_db
       - broker
     ports:
-      - "8006:8000"
+      - "8005:8000" # Updated port for the user service
     networks:
       - default
-    command: ["dapr", "run", "--app-id", "user-service", "--app-port", "8000", "--dapr-http-port", "3500", "--resources-path", "/components"]
+    # command: ["dapr", "run", "--app-id", "user-service", "--app-port", "8005", "--dapr-http-port", "3505", "--resources-path", "/components"]
     environment:
-      DAPR_HTTP_PORT: 3500
+      DAPR_HTTP_PORT: 3505
 
 volumes:
   postgres_db:

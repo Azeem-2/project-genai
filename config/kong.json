@@ -1,0 +1,78 @@
+{
+    "_format_version": "3.0",
+    "services": [
+      {
+        "name": "product-service",
+        "url": "http://product_service:8004",
+        "routes": [
+          {
+            "name": "product-route",
+            "paths": [
+              "/products"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "payment-service",
+        "url": "http://payment_service:8003",
+        "routes": [
+          {
+            "name": "payment-route",
+            "paths": [
+              "/payments"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "order-service",
+        "url": "http://order_service:8002",
+        "routes": [
+          {
+            "name": "order-route",
+            "paths": [
+              "/orders"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "notification-service",
+        "url": "http://notification_service:8001",
+        "routes": [
+          {
+            "name": "notification-route",
+            "paths": [
+              "/notifications"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "inventory-service",
+        "url": "http://inventory_service:8007",
+        "routes": [
+          {
+            "name": "inventory-route",
+            "paths": [
+              "/inventory"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "user-service",
+        "url": "http://user_service:8005",
+        "routes": [
+          {
+            "name": "user-route",
+            "paths": [
+              "/users"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  

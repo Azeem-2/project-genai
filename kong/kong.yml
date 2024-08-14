@@ -1,0 +1,44 @@
+_format_version: "3.0"
+
+services:
+  - name: product-service
+    url: http://localhost:3504  # Dapr sidecar for product-service
+    routes:
+      - name: product-route
+        paths:
+          - /products
+
+  - name: payment-service
+    url: http://localhost:3503  # Dapr sidecar for payment-service
+    routes:
+      - name: payment-route
+        paths:
+          - /payments
+
+  - name: order-service
+    url: http://localhost:3502  # Dapr sidecar for order-service
+    routes:
+      - name: order-route
+        paths:
+          - /orders
+
+  - name: notification-service
+    url: http://localhost:3501  # Dapr sidecar for notification-service
+    routes:
+      - name: notification-route
+        paths:
+          - /notifications
+
+  - name: inventory-service
+    url: http://localhost:3507  # Dapr sidecar for inventory-service
+    routes:
+      - name: inventory-route
+        paths:
+          - /inventory
+
+  - name: user-service
+    url: http://localhost:3505  # Dapr sidecar for user-service
+    routes:
+      - name: user-route
+        paths:
+          - /users

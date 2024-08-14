@@ -1,3 +1,4 @@
+---
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
@@ -7,23 +8,23 @@ spec:
   type: pubsub.kafka
   version: v1
   metadata:
-  - name: brokers
-    value: "broker:19092"  # Address of the Kafka broker
-  - name: consumerGroup
-    value: "order-service-group"  # Consumer group ID
-  - name: clientID
-    value: "order-service-client"  # Unique client ID for the Kafka client
-  - name: sasl.username
-    value: ""  # SASL username, if authentication is required
-  - name: sasl.password
-    value: ""  # SASL password, if authentication is required
-  - name: sasl.mechanism
-    value: ""  # SASL mechanism, if authentication is required
-  - name: tls.enabled
-    value: "false"  # Set to "true" if TLS is enabled for Kafka
-  - name: tls.ca
-    value: ""  # Path to CA certificate, if TLS is enabled
-  - name: tls.cert
-    value: ""  # Path to client certificate, if TLS is enabled
-  - name: tls.key
-    value: ""  # Path to client key, if TLS is enabled
+    - name: brokers
+      value: broker:19092
+    - name: consumerGroup
+      value: order-service-group
+    - name: clientID
+      value: order-service-client
+    - name: sasl.username
+      value: ""
+    - name: sasl.password
+      value: ""
+    - name: sasl.mechanism
+      value: ""
+    - name: tls.enabled
+      value: "false"
+    - name: tls.ca
+      value: ""
+    - name: tls.cert
+      value: ""
+    - name: tls.key
+      value: ""

@@ -1,5 +1,4 @@
-# kafka.yaml
-
+---
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
@@ -10,24 +9,24 @@ spec:
   version: v1
   metadata:
     - name: brokers
-      value: "broker:19092"  # Replace with your Kafka broker address
+      value: broker:19092
     - name: consumerGroup
-      value: "user-service-group"  # Consumer group ID for this service
+      value: user-service-group
     - name: authentication.enabled
-      value: "false"  # Set to "true" if authentication is enabled on your Kafka broker
+      value: "false"
     - name: authentication.username
-      value: ""  # Provide username if authentication is enabled
+      value: ""
     - name: authentication.password
-      value: ""  # Provide password if authentication is enabled
+      value: ""
     - name: tls.enabled
-      value: "false"  # Set to "true" if TLS is enabled
+      value: "false"
     - name: tls.caCert
-      value: ""  # Provide CA certificate if TLS is enabled
+      value: ""
     - name: tls.cert
-      value: ""  # Provide certificate if TLS is enabled
+      value: ""
     - name: tls.key
-      value: ""  # Provide key if TLS is enabled
+      value: ""
     - name: maxMessageBytes
-      value: "1000000"  # Maximum message size in bytes
+      value: "1000000"
     - name: consumer.autoCommitIntervalMs
-      value: "5000"  # Auto commit interval for consumer
+      value: "5000"

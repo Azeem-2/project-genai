@@ -12,12 +12,12 @@ services:
       - postgres_db
       - broker
     ports:
-      - "8001:8000"
+      - "8001:8000" # Updated port for the notification service
     networks:
       - default
-    command: ["dapr", "run", "--app-id", "notification-service", "--app-port", "8000", "--dapr-http-port", "3500", "--resources-path", "/components"]
+    # command: ["dapr", "run", "--app-id", "notification-service", "--app-port", "8001", "--dapr-http-port", "3501", "--resources-path", "/components"]
     environment:
-      DAPR_HTTP_PORT: 3500
+      DAPR_HTTP_PORT: 3501
 
 volumes:
   postgres_db:

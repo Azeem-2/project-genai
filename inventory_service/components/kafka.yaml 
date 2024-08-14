@@ -1,4 +1,4 @@
-# Kafka Pub/Sub component configuration for Dapr
+---
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
@@ -8,15 +8,15 @@ spec:
   type: pubsub.kafka
   version: v1
   metadata:
-  - name: brokers
-    value: "broker:19092" # Kafka broker address
-  - name: consumerGroup
-    value: "inventory-service-group" # Consumer group for Kafka
-  - name: authRequired
-    value: "false" # Set to true if Kafka requires authentication
-  - name: saslUsername
-    value: "" # Username for SASL authentication, if required
-  - name: saslPassword
-    value: "" # Password for SASL authentication, if required
-  - name: tls
-    value: "false" # Set to true if TLS is required
+    - name: brokers
+      value: broker:19092
+    - name: consumerGroup
+      value: inventory-service-group
+    - name: authRequired
+      value: "false"
+    - name: saslUsername
+      value: ""
+    - name: saslPassword
+      value: ""
+    - name: tls
+      value: "false"

@@ -34,6 +34,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+@app.get("/")   
+def read_root():
+    return {"Hello": "World"}
+
 @app.post("/register", response_model=UserRead)
 async def register_user(user: UserCreate, db: Session = Depends(get_session), producer: KafkaProducer = Depends(get_kafka_producer)):
     db_user = get_user_by_email(db, user.email)
