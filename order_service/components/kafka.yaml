@@ -14,17 +14,23 @@ spec:
       value: order-service-group
     - name: clientID
       value: order-service-client
-    - name: sasl.username
+    - name: authType
+      value: "none" # Specify authType as "none" since authentication is disabled
+    - name: authentication.enabled
+      value: "false"
+    - name: authentication.username
       value: ""
-    - name: sasl.password
-      value: ""
-    - name: sasl.mechanism
+    - name: authentication.password
       value: ""
     - name: tls.enabled
       value: "false"
-    - name: tls.ca
+    - name: tls.caCert
       value: ""
     - name: tls.cert
       value: ""
     - name: tls.key
       value: ""
+    - name: maxMessageBytes
+      value: "1000000"
+    - name: consumer.autoCommitIntervalMs
+      value: "5000"

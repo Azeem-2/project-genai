@@ -11,7 +11,11 @@ spec:
     - name: brokers
       value: broker:19092
     - name: consumerGroup
-      value: user-service-group
+      value: payment-service-group
+    - name: clientID
+      value: payment-service-client
+    - name: authType
+      value: "none" # Specify authType as "none" since authentication is disabled
     - name: authentication.enabled
       value: "false"
     - name: authentication.username

@@ -1,0 +1,35 @@
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: kafka
+  namespace: default
+spec:
+  type: pubsub.kafka
+  version: v1
+  metadata:
+    - name: brokers
+      value: broker:19092
+    - name: consumerGroup
+      value: user-service-group
+    - name: authType
+      value: "none" # Specify authType as "none" since authentication is disabled
+    - name: authentication.enabled
+      value: "false"
+    - name: authentication.username
+      value: ""
+    - name: authentication.password
+      value: ""
+    - name: tls.enabled
+      value: "false"
+    - name: tls.caCert
+      value: ""
+    - name: tls.cert
+      value: ""
+    - name: tls.key
+      value: ""
+    - name: maxMessageBytes
+      value: "1000000"
+    - name: consumer.autoCommitIntervalMs
+      value: "5000"
+

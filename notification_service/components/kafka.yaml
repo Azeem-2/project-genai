@@ -2,16 +2,18 @@
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
-  name: kafka
+  name: kafka-pubsub
   namespace: default
 spec:
   type: pubsub.kafka
   version: v1
   metadata:
     - name: brokers
-      value: broker:19092
+      value: broker:9092
     - name: consumerGroup
-      value: product-service-group
+      value: notification-service-group
+    - name: authType
+      value: "none" # Specify authType as "none" since authentication is disabled
     - name: authentication.enabled
       value: "false"
     - name: authentication.username
@@ -30,3 +32,5 @@ spec:
       value: "1000000"
     - name: consumer.autoCommitIntervalMs
       value: "5000"
+scopes:
+  - api
