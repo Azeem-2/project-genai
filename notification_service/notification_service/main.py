@@ -32,7 +32,7 @@ async def create_notification(notification: schemas.NotificationCreate, session:
     try:
         if db_notification.type == "email":
             notifications.send_email_notification(
-                to_email="jk39097@gmail.com",  # Replace with the actual user's email
+                to_email="hassankhan13351@gmail.com",  # Replace with the actual user's email
                 subject="Notification Subject",
                 message=db_notification.message
             )

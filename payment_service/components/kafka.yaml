@@ -1,4 +1,3 @@
----
 apiVersion: dapr.io/v1alpha1
 kind: Component
 metadata:
@@ -15,7 +14,7 @@ spec:
     - name: clientID
       value: payment-service-client
     - name: authType
-      value: "none" # Specify authType as "none" since authentication is disabled
+      value: "none"
     - name: authentication.enabled
       value: "false"
     - name: authentication.username
@@ -30,7 +29,3 @@ spec:
       value: ""
     - name: tls.key
       value: ""
-    - name: maxMessageBytes
-      value: "1000000"
-    - name: consumer.autoCommitIntervalMs
-      value: "5000"
